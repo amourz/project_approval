@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+		<style type="text/css">
+			body {
+				background-color: #404a59;
+			}
+			
+			.mui-input-row label {
+				color: #8f8f94;
+			}
+			
+			.mui-input-row button {
+				color: #8f8f94;
+			}
+			
+			.mui-content-padded button {
+				color: #8f8f94;
+				background-color: #333b47;
+				border: none;
+				border-radius: 10px;
+			}
+			
+			.mui-input-row input {
+				color: #8f8f94;
+			}
+			
+			input[type=number]::-webkit-inner-spin-button,
+			input[type=number]::-webkit-outer-spin-button {
+				-webkit-appearance: none;
+				appearance: none;
+				margin: 0;
+			}
+			
+			#file {
+				opacity: 0;
+				height: 80px;
+				position: absolute;
+			}
+			
+			.transparent {
+				background: transparent;
+			}
+			
+			.dark {
+				background-color: #333b47;
+			}
+			
+			.white {
+				color: #fff;
+				font-size: 14px;
+			}
+			
+			.mui-bar {
+				background-color: #404a59;
+				-webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+				box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+			}
+			
+			.picker-btn {
+				border: none;
+				background: transparent;
+				color: #fff;
+				margin-top: 5px;
+			}
+			
+			.mui-preview-image.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			
+			.mui-preview-header,
+			.mui-preview-footer {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 10;
+			}
+			
+			.mui-preview-header {
+				height: 44px;
+				top: 0;
+			}
+			
+			.mui-preview-footer {
+				height: 50px;
+				bottom: 0px;
+			}
+			
+			.mui-preview-header .mui-preview-indicator {
+				display: block;
+				line-height: 25px;
+				color: #fff;
+				text-align: center;
+				margin: 15px auto 4;
+				width: 70px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 12px;
+				font-size: 16px;
+			}
+			
+			.mui-preview-image {
+				display: none;
+				-webkit-animation-duration: 0.5s;
+				animation-duration: 0.5s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+			}
+			
+			.mui-preview-image.mui-preview-in {
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+			}
+			
+			.mui-preview-image.mui-preview-out {
+				background: none;
+				-webkit-animation-name: fadeOut;
+				animation-name: fadeOut;
+			}
+			
+			.mui-preview-image.mui-preview-out .mui-preview-header,
+			.mui-preview-image.mui-preview-out .mui-preview-footer {
+				display: none;
+			}
+			
+			.mui-zoom-scroller {
+				position: absolute;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				-webkit-backface-visibility: hidden;
+			}
+			
+			.mui-zoom {
+				-webkit-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+			}
+			
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				width: auto;
+				height: auto;
+				max-width: 100%;
+				max-height: 100%;
+			}
+			
+			.mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+				width: 100%;
+			}
+			
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+				display: inline-table;
+			}
+			
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			
+			.mui-preview-loading {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			
+			.mui-preview-loading.mui-active {
+				display: block;
+			}
+			
+			.mui-preview-loading .mui-spinner-white {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -25px;
+				margin-top: -25px;
+				height: 50px;
+				width: 50px;
+			}
+			
+			.mui-preview-image img.mui-transitioning {
+				-webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+				transition: transform 0.5s ease, opacity 0.5s ease;
+			}
+			
+			@-webkit-keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			
+			@keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			
+			@-webkit-keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			
+			@keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+		</style>
+		<title>学会玩项目审批</title>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="">
+			<a href="#popover" id="openPopover" class="mui-icon mui-icon-contact mui-pull-left" style="color:#8f8f94;font-size:30px;"></a>
+		</header>
+		<div class="mui-content transparent">
+			<div class="" id="step1">
+				<div class="mui-card dark">
+					<div class="mui-input-group transparent">
+						<div class="mui-input-row">
+							<label class="white" style="margin-top:3px;">项目名称：</label>
+							<input type="text" name="name" id="name" value="" placeholder="" class="mui-input-clear white" />
+						</div>
+					</div>
+				</div>
+				<div class="mui-card dark">
+					<div class="mui-input-group transparent">
+						<div class="mui-input-row">
+							<label class="white" style="margin-top:3px;">项目人数：</label>
+							<input type="number" name="people" id="people" value="" placeholder="" class="white mui-input-clear" />
+						</div>
+					</div>
+				</div>
+				<div class="mui-card dark">
+					<div class="mui-input-group transparent">
+						<div class="mui-input-row">
+							<label class="white" style="margin-top:3px;">开始时间：</label>
+							<button name="s_time" id="s_time" class="btn picker-btn">选择开始日期 </button>
+						</div>
+					</div>
+				</div>
+				<div class="mui-card dark">
+					<div class="mui-input-group transparent">
+						<div class="mui-input-row">
+							<label class="white" style="margin-top:3px;">结束时间：</label>
+							<button name="e_time" id="e_time" class="btn picker-btn">选择结束日期 </button>
+						</div>
+					</div>
+				</div>
+				<div class="mui-card dark">
+					<div class="mui-input-group transparent">
+						<div class="mui-input-row">
+							<label class="white" style="margin-top:3px;">项目地点：</label>
+							<button name="place" id="place" class="picker-btn">选择项目地点 </button>
+						</div>
+					</div>
+				</div>
+				<div class="mui-card dark">
+					<div class="mui-input-group transparent">
+						<div class="mui-input-row">
+							<label class="white" style="margin-top:3px;">物料主管：</label>
+							<input type="text" name="s_chief" id="s_chief" value="" placeholder="" class="mui-input-clear white" />
+						</div>
+					</div>
+				</div>
+				<div class="mui-card dark">
+					<div class="mui-input-group transparent">
+						<div class="mui-input-row">
+							<label class="white" style="margin-top:3px;">执行人员：</label>
+							<input type="text" name="crew" id="crew" value="" placeholder="" class="mui-input-clear white" />
+						</div>
+					</div>
+				</div>
+				<div class="mui-card dark">
+					<div class="mui-input-group transparent">
+						<div class="mui-input-row">
+							<label class="white" style="margin-top:3px;">备  用  金：</label>
+							<input type="number" name="cash" id="cash" value="" placeholder="" class="white mui-input-clear" />
+						</div>
+					</div>
+				</div>
+				<div class="mui-card dark">
+					<div class="mui-input-group transparent">
+						<div class="mui-input-row" style="height:100px;display: inline;line-height: 100px;">
+							<label class="white" style="line-height: 80px;">上传凭证：</label>
+							<p style="margin:5px;line-height: 100px;height: 100px;">
+								<img src="" height="60" class="mui-hidden" id="img" data-preview-src="" style="line-height: 80px;max-width: 100px;overflow: hidden;">
+								<input id="file" type="file" accept="image/*"><span class="mui-icon mui-icon-camera" style="font-size:80px;line-height: 80px;padding-top:10px;"></span>
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="mui-content-padded" style="text-align: center;margin-top:10px;">
+					<button id='ok' type="button" class="mui-btn">提交申请</button>
+				</div>
+			</div>
+			<div class="mui-hidden" id="step2" style="text-align: center;">
+				<div>
+					<h5 style='margin:10px auto 5px atuo;padding-top:40%;font-size:18px;'>提交成功，请等待审核</h5>
+					<h5 style="margin-top:20px;"><a style="margin-right:5px;text-decoration: underline;color:#fff;">发起新的申请</a><a  herf="my.html" style="margin-right:5px;text-decoration: underline;color:#fff;">返回我的项目</a></h5>
+				</div>
+
+			</div>
+		</div>
+
+		<div id="popover" class="mui-popover" style="width:100px;color:#8f8f94;">
+			<ul class="mui-table-view"  style="background-color: #333b47;border-radius: 5px;">
+				<li class="mui-table-view-cell">
+					<a href="#">项目雷达</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a href="#">项目列表</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a href="#">我的项目</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a href="#">发起项目</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a href="#">退出登录</a>
+				</li>
+				
+			</ul>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script src="js/city.data-3.js"></script>
+		<script src="js/lrz.bundle.js"></script>
+		<script src="js/mui.zoom.js"></script>
+		<script src="js/mui.previewimage.js"></script>
+
+		<script type="text/javascript" charset="utf-8">
+			var base64, s_time, e_time = null;
+			var uid = 1;
+			mui.init();
+			var btns = mui('.btn');
+			btns.each(function(i, btn) {
+				btn.addEventListener('tap', function() {
+					var options = {
+						type: 'date',
+						beginDate: new Date()
+					};
+
+					var id = this.getAttribute('id');
+					var picker = new mui.DtPicker(options);
+					picker.show(function(rs) {
+
+						document.getElementById(id).innerText = rs.text;
+						picker.dispose();
+					});
+				}, false);
+			});
+
+			var cityPicker3 = new mui.PopPicker({
+				layer: 3
+			});
+			cityPicker3.setData(cityData3);
+			var showCityPickerButton = document.getElementById('place');
+			showCityPickerButton.addEventListener('tap', function(event) {
+				cityPicker3.show(function(items) {
+					showCityPickerButton.innerText = (items[0] || {}).text + " " + (items[1] || {}).text + " " + (items[2] || {}).text;
+
+				});
+			}, false);
+
+			document.querySelector('#file').addEventListener('change', function() {
+				document.getElementById("ok").setAttribute('disabled', 'disabled');
+				mui.toast('图片压缩处理中');
+				var that = this;
+
+				lrz(that.files[0], {
+						width: 800
+					})
+					.then(function(rst) {
+
+						var img = document.getElementById("img");
+						img.src = rst.base64;
+						img.classList.remove('mui-hidden');
+						mui.previewImage();
+						base64 = rst.base64;
+						document.getElementById("ok").removeAttribute('disabled');
+						return rst;
+
+					});
+			});
+
+			document.querySelector('#ok').addEventListener('tap', function() {
+				if(document.getElementById("name").value == '') {
+					alert("项目名称不允许为空");
+					return false;
+				}
+				if(document.getElementById("people").value == '') {
+					alert("项目人数不允许为空");
+					return false;
+				}
+				if(document.getElementById("s_time").innerText == '选择开始时间') {
+					alert("项目开始时间不允许为空");
+					return false;
+				}
+				if(document.getElementById("e_time").innerText == '选择结束日期') {
+					document.getElementById("e_time").innerText = document.getElementById("s_time").innerText;
+				}
+
+				s_time = datetime_to_unix(document.getElementById("s_time").innerHTML);
+				e_time = datetime_to_unix(document.getElementById("e_time").innerHTML);
+				if(e_time < s_time) {
+					alert("项目结束时间必须大于开始时间");
+					return false;
+				}
+
+				if(document.getElementById("place").innerText == '选择项目地点') {
+					alert("项目地点不允许为空");
+					return false;
+				}
+				if(document.getElementById("s_chief").value == '') {
+					alert("物料主管不允许为空");
+					return false;
+				}
+				if(document.getElementById("crew").value == '') {
+					alert("执行人员不允许为空");
+					return false;
+				}
+
+				if(document.getElementById("cash").value == '') {
+					alert("备用金不允许为空");
+					return false;
+				}
+
+				if(document.getElementById("file").value == '') {
+					alert("请上传凭证");
+					return false;
+				}
+
+				mui.ajax({
+					type: 'POST',
+					url: 'event.php',
+					data: {
+						'act': 'new',
+						'pic': base64,
+						'manager': uid,
+						'people': document.getElementById("people").value,
+						's_time': s_time,
+						'e_time': e_time,
+						'place': document.getElementById("place").innerHTML,
+						's_chief': document.getElementById("s_chief").value,
+						'crew': document.getElementById("crew").value,
+						'cash': document.getElementById("cash").value,
+						'name': document.getElementById("name").value
+					},
+					dataType: 'json',
+					timeout: 60 * 1000,
+					success: function(rs) {
+
+						if(rs.status) {
+							document.getElementById("ok").setAttribute('disabled', 'disabled');
+							document.getElementById('step2').classList.remove('mui-hidden');
+							document.getElementById('step1').classList.add('mui-hidden');
+						} else {
+							mui.toast(rs.msg);
+						}
+
+					},
+
+					error: function(e, type) {
+						mui.toast("网络错误，请检查设置后重试!");
+
+					}
+				});
+
+			});
+
+			function datetime_to_unix(datetime) {
+				var str = datetime + ' 00:00:00';
+				var tmp_datetime = str.replace(/:/g, '-');
+				tmp_datetime = tmp_datetime.replace(/ /g, '-');
+				var arr = tmp_datetime.split("-");
+				var now = new Date(Date.UTC(arr[0], arr[1] - 1, arr[2], arr[3] - 8, arr[4], arr[5]));
+				return parseInt(now.getTime() / 1000);
+			}
+		</script>
+	</body>
+
+</html>

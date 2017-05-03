@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<link href="css/mui.min.css" rel="stylesheet" />
+				<style type="text/css">
+			
+		</style>
+		<title>学会玩项目审批</title>
+		<script src="js/mui.min.js"></script>
+		<script src="js/lrz.bundle.js"></script>
+
+	</head>
+	<body>
+		 <div   class="mui-content">
+		<input id="file" type="file" accept="image/jpeg">
+		<button type="submit" id="upload">post</button>
+		</div>
+		 
+
+		<script type="text/javascript" charset="utf-8">
+		   var base64;
+			mui.init();
+			 
+		    document.querySelector('input').addEventListener('change', function() {
+			var that = this;
+
+			lrz(that.files[0], {
+					width: 800
+				})
+				.then(function(rst) {
+					var img = new Image();
+					img.src = rst.base64;
+					base64=rst.base64;
+					img.setAttribute('height', 80);
+					img.onload = function() {
+
+						document.body.appendChild(img);
+					};
+
+					return rst;
+
+				});
+		});
+		
+		document.querySelector('#upload').addEventListener('tap',function(){
+			 			mui.ajax({
+				type: 'POST',
+				url: 'upload.php',
+				data: {
+					'img':base64
+				},
+				dataType: 'json',
+				timeout: 60 * 1000, 
+				success: function(rs){
+					mui.toast(JSON.stringify(rs));
+				},
+				complete: function() {
+					 
+				},
+				error: function(e, type) {
+					mui.toast("数据加载失败，请返回重试!");
+					
+				}
+			})
+		});
+		</script>
+	</body>
+ </html>
